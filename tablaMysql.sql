@@ -1,3 +1,10 @@
+CREATE TABLE Sala (
+    id_sala INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50),
+    estado ENUM('disponible','ocupado','no_disponible') NOT NULL
+);
+
 CREATE TABLE Historial_Medico (
     id_historial_medico INT PRIMARY KEY AUTO_INCREMENT,
     antecedentes_historial VARCHAR(100),
@@ -35,8 +42,11 @@ CREATE TABLE Cita (
     motivo VARCHAR(255) NOT NULL,
     id_medico INT NOT NULL,
     id_paciente INT NOT NULL,
+    id_sala INT, 
     FOREIGN KEY (id_medico) REFERENCES Medico(id_medico),
-    FOREIGN KEY (id_paciente) REFERENCES Paciente(id_paciente)
+    FOREIGN KEY (id_paciente) REFERENCES Paciente(id_paciente),
+    FOREIGN KEY (id_sala) REFERENCES Sala(id_sala)
+    
 );
 
 CREATE TABLE Examen_Medico (
@@ -128,7 +138,7 @@ CREATE TABLE Factura (
 CREATE TABLE Pago (
     id_pago INT PRIMARY KEY AUTO_INCREMENT,
     monto DECIMAL(10,2) NOT NULL,
-    metodo_pago ENUM('EFECTVO','TARJETA') NOT NULL,
+    metodo_pago ENUM('EFECTIVO','TARJETA') NOT NULL,
     fecha_pago DATE NOT NULL,
     id_cita INT NOT NULL,
     FOREIGN KEY (id_cita) REFERENCES Cita(id_cita)
@@ -143,9 +153,3 @@ CREATE TABLE Turno_Medico (
     FOREIGN KEY (id_medico) REFERENCES Medico(id_medico)
 );
 
-CREATE TABLE Sala (
-    id_sala INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50) NOT NULL,
-    tipo VARCHAR(50),
-    estado ENUM('disponible','ocupado','no-disponible') NOT NULL
-);
