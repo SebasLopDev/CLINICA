@@ -121,7 +121,12 @@ CREATE TABLE Usuario_Sistema (
     contrasena_user VARCHAR(100),
     email_user VARCHAR(100) UNIQUE,
     id_rol INT NOT NULL,
-    FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
+    id_paciente INT ,
+    id_medico INT,    
+    FOREIGN KEY (id_rol) REFERENCES Rol(id_rol),
+    FOREIGN KEY (id_paciente) REFERENCES Paciente(id_paciente),
+    FOREIGN KEY (id_medico) REFERENCES Medico(id_medico)
+
 );
 
 CREATE TABLE Factura (

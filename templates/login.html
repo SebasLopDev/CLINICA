@@ -5,6 +5,42 @@
 {% block content %}
 
 
+<main class=container_loginMain>
+    <div class="contenedor_login">
+
+        <!-- MÉDICO -->
+        <div class="reg_paciente">
+            <img class="image_login" src="./static/images/paciente.jpg" alt="Médico">
+            <a href="{{ url_for('login_medico') }}">
+                <div class="sub_reg">
+                    <p>Ingresa como</p>
+                    <h4>MÉDICO</h4>
+                </div>
+            </a>
+        </div>
+
+        <!-- PACIENTE -->
+        <div class="reg_medico">
+            <img class="image_login" src="./static/images/medico.jpg" alt="paciente">
+            <a href="{{ url_for('login_paciente') }}">
+                <div class="sub_reg">
+                    <p>Ingresa como</p>
+                    <h4>PACIENTE</h4>
+                </div>
+            </a>
+        </div>
+    </div>  
+
+    <!-- REGISTRO -->
+    <div class="cont_reg">
+        <h3><a href="{{ url_for('registro') }}">REGÍSTRATE</a></h3>
+    </div>
+</main>
+
+
+
+
+
 
 
 {% endblock %}

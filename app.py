@@ -31,6 +31,18 @@ def nosotros():
 def login():
     return render_template('login.html')
 
+@app.route('/login_paciente')
+def login_paciente():
+    return render_template('login_paciente.html')
+
+@app.route('/login_medico')
+def login_medico():
+    return render_template('login_medico.html')
+
+@app.route('/registro')
+def registro():
+    return render_template('registro.html')
+
 if __name__ == '__main__':
     print("Iniciando Flask en http://localhost:5000")
     app.run(debug=True)
