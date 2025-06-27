@@ -7,9 +7,8 @@
 
 <main class=container_loginMain>
 
-    <div class="">
-        <h4>Selecciona tu tipo de Usuario</h4>
-    </div>
+    
+    <h4>Selecciona tu tipo de Usuario</h4>
     <div class="contenedor_login">
 
         <!-- MÉDICO -->
@@ -18,7 +17,7 @@
             <a href="{{ url_for('login_medico') }}">
                 <div class="sub_reg">
                     <p>Ingresa como</p>
-                    <h4>MÉDICO</h4>
+                    <h4>PACIENTE</h4>
                 </div>
             </a>
         </div>
@@ -29,7 +28,7 @@
             <a href="{{ url_for('login_paciente') }}">
                 <div class="sub_reg">
                     <p>Ingresa como</p>
-                    <h4>PACIENTE</h4>
+                    <h4>MÉDICO</h4>
                 </div>
             </a>
         </div>
@@ -37,7 +36,7 @@
 
     <!-- REGISTRO -->
     <div class="cont_reg">
-        <h3><a href="{{ url_for('registro') }}">REGÍSTRATE</a></h3>
+        <h3><a href="{{ url_for('registrar') }}">¡SI AUN NO TIENES CUENTA, REGÍSTRATE!</a></h3>
     </div>
 </main>
 

@@ -8,44 +8,49 @@
 <main>
 
     <div class="container_registro">
-    <h1>Registrar Usuario</h1>
+        <h1>Registrar Usuario</h1>
 
-    <!-- MENSAJES FLASH -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+        <!-- MENSAJES FLASH -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="container_registrar">
+             <img class="image_registrar" src="./static/images/registrar.jpg" alt="registro">
 
+
+            <form method="POST"  action="{{ url_for('registrar') }}" class="formulario-registro">
+                <label for="id_rol">Selecciona tu rol:</label>
+                <select name="id_rol" required>
+                    <option value="1">Paciente</option>
+                    <option value="2">Médico</option>
+                   
+                </select>
+                <input name="nombre" placeholder="Nombre" required>
+                <input name="apellido" placeholder="Apellido" required>
+                <input name="dni" placeholder="DNI" required>
+                <input type="date" name="fecha_nacimiento" required>
     
-    <form method="POST"  action="{{ url_for('registrar') }}" class="formulario-registro">
-        <input name="nombre" placeholder="Nombre" required>
-        <input name="apellido" placeholder="Apellido" required>
-        <input name="dni" placeholder="DNI" required>
-        <input type="date" name="fecha_nacimiento" required>
+                <select name="sexo" required>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                </select>
+    
+                <input name="telefono" placeholder="Teléfono">
+                <input name="direccion" placeholder="Dirección">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="contrasena" placeholder="Contraseña" required>
+    
+    
+                <button type="submit" class="button_reg">Registrar</button>
+            </form>
+        </div>
 
-        <select name="sexo" required>
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
-        </select>
-
-        <input name="telefono" placeholder="Teléfono">
-        <input name="direccion" placeholder="Dirección">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="contrasena" placeholder="Contraseña" required>
-
-        <label for="id_rol">Selecciona tu rol:</label>
-        <select name="id_rol" required>
-            <option value="1">Paciente</option>
-            <option value="2">Médico</option>
-            <option value="3">Administrador</option>
-        </select>
-
-        <button type="submit">Registrar</button>
-    </form>
-</div>
+        
+    </div>
     
     
 
