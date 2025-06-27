@@ -246,6 +246,73 @@ a:hover .sub_reg {
     flex-direction: column;
 }
 
+.container_registro {
+  max-width: 37.5rem; /* 600px */
+  margin: 5rem auto;
+  background-color: var(--azul-claro);
+  padding: 3rem 2rem;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 20rem;
+}
+
+.container_registro h1 {
+  text-align: center;
+  font-size: 2.2rem;
+  color: var(--azul-oscuro);
+  margin-bottom: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.05rem;
+}
+
+.formulario-registro {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.formulario-registro input,
+.formulario-registro select {
+  padding: 0.8rem 1rem;
+  border: 0.0625rem solid var(--borde-suave); /* 1px */
+  border-radius: var(--radio);
+  font-size: 1rem;
+  background-color: #fff;
+  color: var(--gris-texto);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.formulario-registro input:focus,
+.formulario-registro select:focus {
+  border-color: var(--azul-principal);
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.formulario-registro label {
+  font-weight: 600;
+  color: var(--azul-oscuro);
+  font-size: 1rem;
+}
+
+.formulario-registro button {
+  background-color: var(--azul-principal);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: var(--radio);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.05rem;
+  transition: background-color 0.3s ease;
+}
+
+.formulario-registro button:hover {
+  background-color: #2c80b4;
+  cursor: pointer;
+}
+
 .contenedor-footer{
     display: flex;
     justify-content: space-around;

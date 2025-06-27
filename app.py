@@ -3,12 +3,50 @@ import consultas
 
 
 app = Flask(__name__)
+app.secret_key = "clave_segura"
 
 @app.route('/')
 def home():
     return render_template('index.html')
+from flask import render_template, request, redirect, flash, url_for
+import pymysql.err  # Importante para capturar errores específicos
 
-@app.route('/registrar', methods=["GET", "POST"])
+@app.route('/registro', methods=["GET", "POST"])
+def registrar():
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        apellido = request.form["apellido"]
+        dni = request.form["dni"]
+        fecha_nacimiento = request.form["fecha_nacimiento"]
+        sexo = request.form["sexo"]
+        telefono = request.form["telefono"]
+        direccion = request.form["direccion"]
+        email = request.form["email"]
+        contrasena = request.form["contrasena"]
+        id_rol = request.form["id_rol"]
+
+        try:
+            # Función que guarda el usuario y el paciente
+            consultas.insertar_usuario_y_paciente(
+                nombre, apellido, dni, fecha_nacimiento, sexo,
+                telefono, direccion, email, contrasena, id_rol
+            )
+            flash("Usuario registrado con éxito.", "success")
+            return redirect("/bienvenida")
+
+        except pymysql.err.IntegrityError as e:
+            # Si el error es por clave foránea inválida o email duplicado
+            if "foreign key constraint" in str(e).lower():
+                flash("Rol inválido. Por favor selecciona un rol correcto.", "danger")
+            elif "duplicate" in str(e).lower():
+                flash("El correo o DNI ya está registrado.", "warning")
+            else:
+                flash("Ocurrió un error inesperado. Intenta nuevamente.", "danger")
+    
+    return render_template("registro.html")
+
+
+'''@app.route('/registro', methods=["GET", "POST"])
 def registrar():
     if request.method == "POST":
         nombre = request.form["nombre"]
@@ -25,7 +63,7 @@ def registrar():
         consultas.insertar_usuario_y_paciente(nombre, apellido, dni, fecha_nacimiento, sexo, telefono, direccion, email, contrasena, id_rol)
         return redirect("/bienvenida")
     
-    return render_template("registro.html")
+    return render_template("registro.html")'''
 
 
 @app.route('/nosotros')
@@ -44,9 +82,7 @@ def login_paciente():
 def login_medico():
     return render_template('login_medico.html')
 
-@app.route('/registro')
-def registro():
-    return render_template('registro.html')
+
 
 if __name__ == '__main__':
     print("Iniciando Flask en http://localhost:5000")

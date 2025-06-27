@@ -6,7 +6,7 @@ def obtener_conexion():
             host='localhost',
             user='root',
             password='',
-            database='clinica'
+            database='clinica1'
         )
         print("Conexión exitosa a la base de datos")
         return conexion
