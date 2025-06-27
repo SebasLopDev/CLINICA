@@ -237,6 +237,15 @@ a:hover .sub_reg {
    
 }
 
+.container_registro{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 7.5rem;
+    margin-bottom: 30rem;
+    flex-direction: column;
+}
+
 .contenedor-footer{
     display: flex;
     justify-content: space-around;

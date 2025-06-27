@@ -6,6 +6,37 @@
 
 
 <main>
+
+    <div class=container_registro>
+            <h1>Registrar Usuario</h1>
+            <form method="POST">
+                <input name="nombre" placeholder="Nombre" required><br>
+                <input name="apellido" placeholder="Apellido" required><br>
+                <input name="dni" placeholder="DNI" required><br>
+                <input type="date" name="fecha_nacimiento" required><br>
+                <select name="sexo" required>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                </select><br>
+                <input name="telefono" placeholder="Teléfono"><br>
+                <input name="direccion" placeholder="Dirección"><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="password" name="contrasena" placeholder="Contraseña" required><br>
+        
+                <!-- Selección del rol -->
+                <label for="id_rol">Selecciona tu rol:</label>
+                <select name="id_rol" required>
+                    <option value="1">Paciente</option>
+                    <option value="2">Médico</option>
+                    <option value="3">Administrador</option>
+                </select><br>
+        
+                <button type="submit">Registrar</button>
+            </form>
+
+    </div>    
+    
+
     
 </main>
 
