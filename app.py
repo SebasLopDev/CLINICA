@@ -32,7 +32,7 @@ def registrar():
                 telefono, direccion, email, contrasena, id_rol
             )
             flash("Usuario registrado con éxito.", "success")
-            return redirect("/bienvenida")
+            return redirect(url_for('registrar'))
 
         except pymysql.err.IntegrityError as e:
             # Si el error es por clave foránea inválida o email duplicado
