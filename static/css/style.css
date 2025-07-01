@@ -186,10 +186,11 @@ img{
 .image_login{
     width: 25rem;
     height: auto;
-    object-fit: cover;
+    object-fit:cover;
     margin-top:3rem;
     border-radius:15px 15px 0px 0px;
-    height: 28rem;
+    height: 25rem;
+    
 }
 .contenedor_login{
     display: flex;

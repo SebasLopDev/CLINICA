@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import consultas
+import pymysql.err # Importante para capturar errores específicos
 
 
 app = Flask(__name__)
@@ -8,8 +9,7 @@ app.secret_key = "clave_segura"
 @app.route('/')
 def home():
     return render_template('index.html')
-from flask import render_template, request, redirect, flash, url_for
-import pymysql.err  # Importante para capturar errores específicos
+
 
 @app.route('/registro', methods=["GET", "POST"])
 def registrar():
