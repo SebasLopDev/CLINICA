@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Clínica Médica{% endblock %}</title>
+    <title>Clínica Médica</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <!-- jQuery (requerido por Bootstrap 4) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <!-- Popper.js (requerido por Bootstrap 4 para componentes como tooltips) -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <!-- Bootstrap 4 JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
     <!-- Enlace al archivo CSS (estático) -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">    
@@ -19,21 +21,37 @@
 </head>
 <body>
     
-    <div class="contenedor-nav">
+    <main class="container-pagina">
+        <div class="contenedor-nav">
 
-        <nav class="nav">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('nosotros') }}">Nosotros</a>
-            <a href="{{ url_for('login') }}">Registrate</a>            
-            
-        </nav>
-    </div>
+            <nav class="nav">
+                <a href="{{ url_for('home') }}">Mis datos</a>
+                <a href="{{ url_for('nosotros') }}">Consultar Especialidades</a>
+                <a href="{{ url_for('nosotros') }}">Reservar Cita</a>
+                <a href="{{ url_for('logout') }}">Cerrar sesión</a>            
+                
+            </nav>
+        </div>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for categoria, mensaje in mensajes %}
+                <div class="alert alert-{{ categoria }} alert-dismissible fade show mt-3 mx-3" role="alert">
+                    {{ mensaje }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+         <h3>Bienvenido, {{ session["nombre"] }}</h3>
+
     
 
     <!-- Bloque de contenido que se reemplazará en cada página específica -->
-    <main>
-        {% block content %}
-        {% endblock %}
+        
     </main>
 
     <footer class="footer">

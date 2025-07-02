@@ -251,13 +251,13 @@ a:hover .sub_reg {
     flex-direction: column;
 }
 
-.container_registro {
+.container_registro{
   max-width: 37.5rem; /* 600px */
   margin: 5rem auto;
   
   padding: 3rem 2rem;
   border-radius: var(--radio);
-  box-shadow: var(--sombra-suave);
+  
   font-family: 'Inter', sans-serif;
   margin-bottom: 20rem;
 }
@@ -271,14 +271,17 @@ a:hover .sub_reg {
   letter-spacing: 0.05rem;
 }
 
-.formulario-registro {
+.formulario-registro,
+.formLogin {
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
 }
 
 .formulario-registro input,
-.formulario-registro select {
+.formulario-registro select,
+.formLogin input,
+.formLogin select {
   padding: 0.8rem 1rem;
   border: 0.0625rem solid var(--borde-suave); /* 1px */
   border-radius: var(--radio);
@@ -289,19 +292,23 @@ a:hover .sub_reg {
 }
 
 .formulario-registro input:focus,
-.formulario-registro select:focus {
+.formulario-registro select:focus,
+.formLogin input:focus,
+.formLogin select:focus {
   border-color: var(--azul-principal);
   box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.2);
   outline: none;
 }
 
-.formulario-registro label {
+.formulario-registro label,
+.formLogin label {
   font-weight: 600;
   color: var(--azul-oscuro);
   font-size: 1rem;
 }
 
-.formulario-registro button {
+.formulario-registro button,
+.formLogin button {
   background-color:#507ea3 ;
   color: white;
   border: none;
@@ -313,7 +320,8 @@ a:hover .sub_reg {
   transition: background-color 0.3s ease;
 }
 
-.formulario-registro button:hover {
+.formulario-registro button:hover,
+.formLogin button:hover {
   background-color:#1f3446;
   cursor: pointer;
 }
@@ -332,6 +340,31 @@ a:hover .sub_reg {
     object-fit: cover;
     background-size: cover;
 }
+.form-container{
+    display: flex;
+    flex-direction: column;
+    margin-top: 8rem;
+    margin-bottom: 22rem;
+}
+
+.formLogin-container{
+    max-width: 37.5rem; /* 600px */
+    margin: 7rem auto 22rem auto;    
+    padding: 3rem 2rem;    
+    font-family: 'Inter', sans-serif;
+    
+}
+.TitleLog{    
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.container-pagina{
+    margin-top: 6rem;
+}
+
+
+
 
 .contenedor-footer{
     display: flex;

@@ -4,8 +4,38 @@
 
 {% block content %}
 
-
 <main>
+
+
+    <div class="formLogin-container">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="TitleLog">
+            <h4>Iniciar sesión</h4>
+
+        </div>
+
+        <div class="container_Login">
+            <form method="POST" class="formLogin">
+                <label>DNI:</label>
+                <input type="text" name="dni" required placeholder="Ingrese su DNI">
+
+                <label>Contraseña:</label>
+                <input type="password" name="contrasena" required placeholder="Ingrese su contraseña">
+
+                <button type="submit">Iniciar sesión</button>
+            </form>
+
+        </div>    
+    </div>
+
     
          
 </main>
