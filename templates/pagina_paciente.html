@@ -1,33 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica Médica</title>
+{% extends 'base_paciente.html' %}
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
-    <!-- jQuery (requerido por Bootstrap 4) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <!-- Popper.js (requerido por Bootstrap 4 para componentes como tooltips) -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <!-- Bootstrap 4 JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% block title %}Inicio{% endblock %}
 
-
-    <!-- Enlace al archivo CSS (estático) -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">    
-    
-</head>
-<body>
+{% block content %}
     
     <main class="container-pagina">
         <div class="contenedor-nav">
 
             <nav class="nav">
-                <a href="{{ url_for('home') }}">Mis datos</a>
-                <a href="{{ url_for('nosotros') }}">Consultar Especialidades</a>
-                <a href="{{ url_for('nosotros') }}">Reservar Cita</a>
+                <a href="{{ url_for('pagina_paciente') }}">Mis datos</a>
+                <a href="{{ url_for('consultar_especialidades')}}">Consultar Especialidades</a>
+                <a href="{{ url_for('nueva_cita') }}">Reservar Cita</a>
                 <a href="{{ url_for('logout') }}">Cerrar sesión</a>            
                 
             </nav>
@@ -76,5 +59,6 @@
         </div>
         <p class="copyright">Todos los derechos reservados. Clínica Medical</p>
     </footer>
-</body>
-</html>
+
+
+{% endblock %}

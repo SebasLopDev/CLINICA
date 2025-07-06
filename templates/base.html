@@ -14,7 +14,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Enlace al archivo CSS (estático) -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">    
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">   
+    
     
 </head>
 <body>
@@ -31,10 +32,10 @@
     
 
     <!-- Bloque de contenido que se reemplazará en cada página específica -->
-    <main>
+    <div>
         {% block content %}
         {% endblock %}
-    </main>
+    </div>
 
     <footer class="footer">
         <div class="contenedor-footer">

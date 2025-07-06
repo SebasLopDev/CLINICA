@@ -108,6 +108,7 @@ CREATE TABLE Especialidad (
     id_especialidad INT PRIMARY KEY AUTO_INCREMENT,
     nombre_espclidad VARCHAR(100) NOT NULL,
     descripcion_espclidad VARCHAR(200)
+    precio_consulta DECIMAL(10, 2) NOT NULL
 );
 
 CREATE TABLE Rol (
@@ -156,5 +157,12 @@ CREATE TABLE Turno_Medico (
     hora_fin VARCHAR(10) NOT NULL,
     id_medico INT NOT NULL,
     FOREIGN KEY (id_medico) REFERENCES Medico(id_medico)
+);
+CREATE TABLE Medico_Especialidad (
+    id_medico INT NOT NULL,
+    id_especialidad INT NOT NULL,
+    PRIMARY KEY (id_medico, id_especialidad),
+    FOREIGN KEY (id_medico) REFERENCES Medico(id_medico),
+    FOREIGN KEY (id_especialidad) REFERENCES Especialidad(id_especialidad)
 );
 

@@ -349,7 +349,7 @@ a:hover .sub_reg {
 
 .formLogin-container{
     max-width: 37.5rem; /* 600px */
-    margin: 7rem auto 22rem auto;    
+    margin: 3rem auto 22rem auto;    
     padding: 3rem 2rem;    
     font-family: 'Inter', sans-serif;
     
@@ -361,6 +361,418 @@ a:hover .sub_reg {
 
 .container-pagina{
     margin-top: 6rem;
+}
+
+.container_nueva_listado{
+    display: flex;
+    padding-top: 3rem;
+    padding-left: 15rem;
+    padding-right: 15rem;
+    flex-direction: column;
+    margin-bottom:25rem;
+    
+
+}
+
+/*ebert*/
+/* Hero */
+    
+
+    /* Servicio: contenedor de imagen */
+    .img-wrapper {
+      width: 80px;
+      height: 80px;
+      overflow: hidden;
+      margin: 0 auto 1rem;
+    }
+    .img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Servicios */
+    .card-service {
+      border: none;
+      transition: transform 0.3s;
+      background: #f8f9fa;
+      padding: 1.5rem;
+    }
+    .card-service:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    /* Galería: contenedor con proporción fija */
+    .gallery-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;        /* 4:3; cámbialo a 1/1 si prefieres cuadrado */
+      overflow: hidden;
+      border-radius: .5rem;
+    }
+    .gallery-item img {
+      padding: 1rem;
+      position: absolute;
+      inset: 0;                   /* top:0; right:0; bottom:0; left:0 */
+      width: 100%;
+      height: 100%;
+      object-fit: cover;          /* cubre todo, recortando si es necesario */
+      object-position: center;
+      border-radius: 1rem;
+    }
+
+    /* Doctores Destacados */
+    .doctor-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-top-left-radius: .5rem;
+      border-top-right-radius: .5rem;
+    }
+
+    /* Testimonios */
+    .testimonial {
+      background: #f1f1f1;
+      padding: 2rem;
+      border-radius: .5rem;
+    }
+
+    /* CTA button */
+    .btn-primary {
+      background-color: #5a0c91;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #45086d;
+    }
+    .custom-table td:nth-child(2),
+    .custom-table td:nth-child(3) {
+        color: #5a0c91;
+    }
+    .h1{
+        text-align: center;
+    }
+       
+
+/*edgar */
+
+/* Imagen con texto encima */
+.seccion-imagen-texto {
+    position: relative;
+    text-align: center;
+    margin-bottom: 3rem;
+    overflow: visible;
+    z-index: 1;
+}
+
+.contenedor-imagen-texto {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    height: 400px;
+    overflow: hidden;
+}
+
+.imagen-ambulancia {
+    width: 60%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.1) 85%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.1) 85%, rgba(0, 0, 0, 0) 100%);
+}
+
+.texto-encima {
+    width: 45%;
+    background-color: white;
+    padding: 6rem 2rem 6rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+    .texto-encima h1 {
+        font-size: 2.3rem;
+        line-height: 1.2;
+        margin: 0;
+        color: #222;
+        text-indent: 1.5rem;
+        word-break: keep-all;
+        white-space: normal;
+    }
+
+    .texto-encima .subtitulo {
+        font-size: 1.1rem;
+        margin-top: 1.2rem;
+        color: #555;
+        text-indent: 1.5rem;
+        line-height: 1.4;
+    }
+
+
+/* Frases destacadas */
+.seccion-frases {
+    background-color: #f5f5f5;
+    padding: 3rem 1rem;
+}
+
+.contenedor-frases {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2rem;
+}
+
+.frase {
+    background-color: #ffffff;
+    padding: 1.8rem 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    font-size: 1.2rem;
+    color: #444;
+    max-width: 700px;
+    width: 100%;
+}
+
+/* Viñetas con enlaces */
+.seccion-vinetas {
+    padding: 2rem 2rem 4rem;
+    background-color: #f5f5f5;
+    text-align: center;
+    margin-top: 8rem;
+    position: relative;
+    z-index: 2;
+}
+
+    .seccion-vinetas h2 {
+        font-size: 2rem;
+        color: #2e2e2e;
+        margin-bottom: 2.5rem;
+        font-family: 'Georgia', serif;
+        font-weight: 600;
+    }
+
+.contenedor-vinetas {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    padding: 0 2rem;
+}
+
+.vineta-link {
+    text-decoration: none;
+    color: inherit;
+    flex: 1 1 280px;
+    max-width: 320px;
+    transition: transform 0.3s ease;
+}
+
+.vineta {
+    background: linear-gradient(145deg, #ffffff, #f1f1f1);
+    padding: 2rem;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Georgia', serif;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+    .vineta:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .vineta h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: #007bff;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .vineta p {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.4;
+    }
+
+/* Resultados */
+.resultados-medicos {
+    padding-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.card-medico {
+    background-color: #f1f1f1;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #ccc;
+    font-family: 'Inter', sans-serif;
+    box-shadow: none; /* Sin sombra */
+    transition: none; /* Sin animación */
+}
+
+    .card-medico h4 {
+        margin-bottom: 6px;
+        color: #212529;
+        font-weight: 600;
+        font-size: 17px;
+    }
+
+    .card-medico p {
+        margin: 4px 0;
+        color: #444;
+        font-size: 15px;
+    }
+
+.no-resultados {
+    text-align: center;
+    margin-top: 30px;
+    color: #888;
+    font-style: italic;
+    font-family: 'Inter', sans-serif;
+}
+
+.formulario-busqueda select {
+    width: 100%;
+    min-width: 300px; /* o lo que prefieras */
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+
+}
+
+
+.formulario-registro,
+.formLogin {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+}
+
+    .formulario-registro input,
+    .formulario-registro select,
+    .formLogin input,
+    .formLogin select {
+        padding: 0.5rem 1rem;
+        border: 0.0625rem solid var(--borde-suave); /* 1px */
+        border-radius: var(--radio);
+        font-size: 1rem;
+        background-color: #fff;
+        color: var(--gris-texto);
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .formulario-registro input:focus,
+    .formulario-registro select:focus,
+    .formLogin input:focus,
+    .formLogin select:focus {
+        border-color: var(--azul-principal);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.2);
+        outline: none;
+    }
+
+.formulario-registro label,
+.formLogin label {
+font-weight: 600;
+color: var(--azul-oscuro);
+font-size: 1rem;
+}
+
+.formulario-registro button,
+.formLogin button {
+background-color: #507ea3;
+color: white;
+border: none;
+padding: 1rem;
+border-radius: var(--radio);
+font-size: 1.1rem;
+font-weight: 600;
+letter-spacing: 0.05rem;
+transition: background-color 0.3s ease;
+}
+
+.formulario-registro button:hover,
+.formLogin button:hover {
+background-color: #1f3446;
+cursor: pointer;
+}
+
+#id_especialidad {
+    min-width: 280px;
+    font-size: 1rem;
+}
+
+/* Sección general */
+.seccion-especialidades {
+    padding: 7rem 3rem;
+    padding-bottom: 27rem;
+}
+
+.contenedor-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+/* Listado */
+.listado-especialidades h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.listado-especialidades ul {
+    list-style: none;
+    padding: 0;
+}
+
+.boton-especialidad {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    font-size: 1rem;
+}
+
+    .boton-especialidad:hover {
+        background-color: #e0f0ff;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+    }
+
+/* Descripción */
+.descripcion-especialidad {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.descripcion-especialidad h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.descripcion-especialidad p {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.6;
+}
+.cont-nosotros{
+    margin-top: 5rem;
 }
 
 
