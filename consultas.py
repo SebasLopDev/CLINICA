@@ -537,6 +537,71 @@ def eliminar_paciente(id_paciente):
         return False
     finally:
         conn.close()
+        
+def eliminar_paciente_completo(id_paciente):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            # 1. Obtener todas las citas del paciente
+            cursor.execute("SELECT id_cita FROM Cita WHERE id_paciente = %s", (id_paciente,))
+            citas = [row[0] for row in cursor.fetchall()]
+
+            if citas:
+                citas_str = ','.join(map(str, citas))  # para usar en IN (...)
+
+                # 2. Eliminar relaciones que dependen de las citas
+                cursor.execute(f"""
+                    DELETE FROM Receta_Medicamento 
+                    WHERE id_receta IN (
+                        SELECT id_receta FROM Receta WHERE id_cita IN ({citas_str})
+                    )
+                """)
+
+                cursor.execute(f"DELETE FROM Receta WHERE id_cita IN ({citas_str})")
+
+                cursor.execute(f"""
+                    DELETE FROM Tratamiento 
+                    WHERE id_diagnostico IN (
+                        SELECT id_diagnostico FROM Diagnostico WHERE id_cita IN ({citas_str})
+                    )
+                """)
+
+                cursor.execute(f"DELETE FROM Diagnostico WHERE id_cita IN ({citas_str})")
+
+                cursor.execute(f"DELETE FROM Examen_Medico WHERE id_cita IN ({citas_str})")
+                cursor.execute(f"DELETE FROM Pago WHERE id_cita IN ({citas_str})")
+
+                # 3. Eliminar las citas
+                cursor.execute("DELETE FROM Cita WHERE id_paciente = %s", (id_paciente,))
+
+            # 4. Eliminar facturas
+            cursor.execute("DELETE FROM Factura WHERE id_paciente = %s", (id_paciente,))
+
+            # 5. Eliminar usuario asociado
+            cursor.execute("DELETE FROM Usuario_Sistema WHERE id_paciente = %s", (id_paciente,))
+
+            # 6. Eliminar historial médico (si existiera)
+            cursor.execute("SELECT id_historial_medico FROM Paciente WHERE id_paciente = %s", (id_paciente,))
+            fila = cursor.fetchone()
+            if fila and fila[0]:
+                id_historial = fila[0]
+                cursor.execute("DELETE FROM Historial_Medico WHERE id_historial_medico = %s", (id_historial,))
+
+            # 7. Eliminar paciente
+            cursor.execute("DELETE FROM Paciente WHERE id_paciente = %s", (id_paciente,))
+
+        conn.commit()
+        print("Paciente y relaciones eliminados correctamente.")
+        return True
+
+    except Exception as e:
+        conn.rollback()
+        print("Error al eliminar completamente al paciente:", e)
+        return False
+
+    finally:
+        conn.close()
+        
 
 def insertar_paciente_con_usuario(
     nombre, apellido, dni, fecha_nacimiento,

@@ -584,11 +584,17 @@ def modificar_paciente():
 
         id_paciente = request.form['id']
         if action == 'delete':
-            if consultas.eliminar_paciente(id_paciente):
+            if consultas.eliminar_paciente_completo(id_paciente):
+                flash('Paciente y todos sus datos relacionados fueron eliminados correctamente', 'success')
+            else:
+                flash('Error al eliminar paciente. Verifica que no tenga datos relacionados bloqueados.', 'danger')
+            return redirect(url_for('modificar_paciente'))
+            
+            '''if consultas.eliminar_paciente(id_paciente):
                 flash('Paciente y usuario eliminados', 'success')
             else:
                 flash('Error al eliminar paciente', 'danger')
-            return redirect(url_for('modificar_paciente'))
+            return redirect(url_for('modificar_paciente'))'''
 
         # action == 'update'
         nombre           = request.form['nombre']
