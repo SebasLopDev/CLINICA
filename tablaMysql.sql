@@ -119,7 +119,7 @@ CREATE TABLE Rol (
 CREATE TABLE Usuario_Sistema (
     id_usuario INT PRIMARY KEY AUTO_INCREMENT,
     nombre_user VARCHAR(50) NOT NULL,
-    contrasena_user VARCHAR(100),
+    contrasena_user VARCHAR(100) NOT NULL,
     email_user VARCHAR(100) UNIQUE,
     id_rol INT NOT NULL,
     id_paciente INT ,

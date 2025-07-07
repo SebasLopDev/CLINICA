@@ -1,4 +1,6 @@
 # consultas.py
+import io
+import pandas as pd
 import pymysql
 from bd import obtener_conexion
 
@@ -439,7 +441,299 @@ def eliminar_relaciones_medicamento(id_medicamento):
     conexion.commit()
     conexion.close()
         
-        
+ #ADMIN
+ 
+ # Obtener todos los pacientes (devolviendo lista de dicts)
+def get_all_pacientes():
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                  p.id_paciente,
+                  p.nombre        AS nombre_paciente,
+                  p.apellido      AS apellido_paciente,
+                  p.dni,
+                  p.fecha_nacimiento,
+                  p.sexo,
+                  p.telefono,
+                  p.direccion,
+                  p.email         AS email_paciente,
+                  u.id_usuario,
+                  u.nombre_user   AS nombre_usuario,
+                  u.email_user    AS email_usuario
+                FROM Paciente p
+                LEFT JOIN Usuario_Sistema u
+                  ON u.id_paciente = p.id_paciente
+            """)
+            rows = cursor.fetchall()
+            cols = [col[0] for col in cursor.description]
+        return [dict(zip(cols, row)) for row in rows]
+    finally:
+        conn.close()
+
+
+# Actualizar paciente y usuario asociado
+def update_paciente(id_paciente, nombre, apellido, dni,
+                    fecha_nacimiento, sexo, telefono,
+                    direccion, email):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            # 1) Actualiza Paciente
+            cursor.execute(
+                """
+                UPDATE Paciente
+                   SET nombre = %s,
+                       apellido = %s,
+                       dni = %s,
+                       fecha_nacimiento = %s,
+                       sexo = %s,
+                       telefono = %s,
+                       direccion = %s,
+                       email = %s
+                 WHERE id_paciente = %s
+                """,
+                (nombre, apellido, dni, fecha_nacimiento,
+                 sexo, telefono, direccion, email,
+                 id_paciente)
+            )
+            # 2) Actualiza Usuario_Sistema (solo nombre_user y email_user)
+            cursor.execute(
+                """
+                UPDATE Usuario_Sistema
+                   SET nombre_user = %s,
+                       email_user  = %s
+                 WHERE id_paciente = %s
+                """,
+                (nombre, email, id_paciente)
+            )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print("Error al actualizar paciente y usuario:", e)
+        return False
+    finally:
+        conn.close()
+# Eliminar paciente y usuario asociado
+def eliminar_paciente(id_paciente):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM Usuario_Sistema WHERE id_paciente = %s",
+                (id_paciente,)
+            )
+            cursor.execute(
+                "DELETE FROM Paciente WHERE id_paciente = %s",
+                (id_paciente,)
+            )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print("Error al eliminar paciente y usuario:", e)
+        return False
+    finally:
+        conn.close()
+
+def insertar_paciente_con_usuario(
+    nombre, apellido, dni, fecha_nacimiento,
+    sexo, telefono, direccion, email,
+    nombre_user, contrasena_user,
+    id_rol=1  # 1 = PACIENTE
+):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            # Insertar Paciente
+            cursor.execute(
+                """
+                INSERT INTO Paciente (
+                  nombre, apellido, dni, fecha_nacimiento,
+                  sexo, telefono, direccion, email
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (nombre, apellido, dni, fecha_nacimiento,
+                 sexo, telefono, direccion, email)
+            )
+            id_paciente = cursor.lastrowid
+            # Insertar Usuario_Sistema
+            cursor.execute(
+                """
+                INSERT INTO Usuario_Sistema (
+                  nombre_user, contrasena_user, email_user,
+                  id_rol, id_paciente
+                ) VALUES (%s, %s, %s, %s, %s)
+                """,
+                (nombre_user, contrasena_user, email, id_rol, id_paciente)
+            )
+        conn.commit()
+        return id_paciente
+    except Exception as e:
+        conn.rollback()
+        print("Error al insertar paciente+usuario:", e)
+        return None
+    finally:
+        conn.close()
+# Listar doctores y datos de usuario asociado
+def get_all_doctores():
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                  m.id_medico,
+                  m.nombre        AS nombre_medico,
+                  m.apellido      AS apellido_medico,
+                  m.email         AS email_medico,
+                  m.estado,
+                  u.id_usuario,
+                  u.nombre_user   AS nombre_usuario,
+                  u.email_user    AS email_usuario
+                FROM Medico m
+                LEFT JOIN Usuario_Sistema u ON u.id_medico = m.id_medico
+            """)
+            rows = cursor.fetchall()
+            cols = [col[0] for col in cursor.description]
+        return [dict(zip(cols, row)) for row in rows]
+    finally:
+        conn.close()
+
+# Insertar doctor + usuario en transacciÃ³n
+def insertar_doctor_con_usuario(
+    nombre, apellido, email, estado,
+    nombre_user, contrasena_user,
+    id_rol=2  # 2 = MEDICO
+):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            # 1) Insertar en Medico
+            cursor.execute(
+                """
+                INSERT INTO Medico (nombre, apellido, email, estado)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (nombre, apellido, email, estado)
+            )
+            id_medico = cursor.lastrowid
+            # 2) Insertar en Usuario_Sistema
+            cursor.execute(
+                """
+                INSERT INTO Usuario_Sistema (
+                  nombre_user, contrasena_user, email_user,
+                  id_rol, id_medico
+                ) VALUES (%s, %s, %s, %s, %s)
+                """,
+                (nombre_user, contrasena_user, email, id_rol, id_medico)
+            )
+        conn.commit()
+        return id_medico
+    except Exception as e:
+        conn.rollback()
+        print("Error al insertar doctor+usuario:", e)
+        return None
+    finally:
+        conn.close()
+
+# Actualizar doctor + usuario asociado
+def update_doctor(id_medico, nombre, apellido, email, estado):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            # Actualizar Medico
+            cursor.execute(
+                """
+                UPDATE Medico
+                   SET nombre   = %s,
+                       apellido = %s,
+                       email    = %s,
+                       estado   = %s
+                 WHERE id_medico = %s
+                """,
+                (nombre, apellido, email, estado, id_medico)
+            )
+            # Actualizar Usuario_Sistema
+            cursor.execute(
+                """
+                UPDATE Usuario_Sistema
+                   SET nombre_user = %s,
+                       email_user  = %s
+                 WHERE id_medico = %s
+                """,
+                (nombre, email, id_medico)
+            )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print("Error al actualizar doctor y usuario:", e)
+        return False
+    finally:
+        conn.close()
+
+# Eliminar doctor + usuario asociado
+def eliminar_doctor(id_medico):
+    conn = obtener_conexion()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM Usuario_Sistema WHERE id_medico = %s",
+                (id_medico,)
+            )
+            cursor.execute(
+                "DELETE FROM Medico WHERE id_medico = %s",
+                (id_medico,)
+            )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print("Error al eliminar doctor y usuario:", e)
+        return False
+    finally:
+        conn.close()
+
+
+#--------------
+def get_pacientes_dataframe(desde=None, hasta=None, sexo=None, texto_busqueda=None):
+    sql = """
+      SELECT
+        p.fecha_nacimiento         AS fecha_nacimiento,
+        p.id_paciente,
+        p.nombre,
+        p.apellido,
+        p.dni,
+        p.sexo,
+        p.email                   AS email_paciente,
+        u.nombre_user             AS usuario_sistema
+      FROM Paciente p
+      LEFT JOIN Usuario_Sistema u ON u.id_paciente = p.id_paciente
+      WHERE 1=1
+    """
+    params = []
+    if desde:
+        sql += " AND p.fecha_nacimiento >= %s"
+        params.append(desde)
+    if hasta:
+        sql += " AND p.fecha_nacimiento <= %s"
+        params.append(hasta)
+    if sexo:
+        sql += " AND p.sexo = %s"
+        params.append(sexo)
+    if texto_busqueda:
+        sql += " AND (p.nombre LIKE %s OR p.apellido LIKE %s OR p.dni LIKE %s)"
+        like = f"%{texto_busqueda}%"
+        params.extend([like, like, like])
+
+    conn = obtener_conexion()
+    try:
+        df = pd.read_sql(sql, conn, params=params)
+    finally:
+        conn.close()
+    return df       
         
 
 '''def obtener_doctores_por_especialidad(id_especialidad):

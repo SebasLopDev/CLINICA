@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session,send_file
 import consultas
 import pymysql.err # Importante para capturar errores específicos
 from datetime import datetime
+import io
+import pandas as pd
 
 
 
@@ -520,6 +522,173 @@ def listar_recetas():
     recetas = consultas.obtener_recetas()  # Debes tener esta función en `consultas.py`
     return render_template("recetas/lista.html", recetas=recetas)
 
+
+#ADMIN
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        user = request.form['usuario']
+        pwd  = request.form['password']
+        if user == 'admin' and pwd == 'admin':
+            session['is_admin'] = True
+            flash('Bienvenido, administrador', 'success')
+            return redirect(url_for('admin_panel'))
+        flash('Credenciales incorrectas', 'danger')
+    return render_template('admin_login.html')
+
+
+# --- Panel protegido ---
+@app.route('/admin/panel')
+def admin_panel():
+    if not session.get('is_admin'):
+        flash('Ingresa como admin primero', 'warning')
+        return redirect(url_for('admin_login'))
+    return render_template('admin_panel.html')
+
+# --- Logout ---
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin', None)
+    flash('Sesión cerrada', 'info')
+    return redirect(url_for('admin_login'))
+
+@app.route('/admin/modificar_paciente', methods=['GET', 'POST'])
+def modificar_paciente():
+    if request.method == 'POST':
+        # Determinar acción
+        action = request.form.get('action')
+        if action == 'add':
+            # Campos Paciente
+            nombre           = request.form['nombre']
+            apellido         = request.form['apellido']
+            dni              = request.form['dni']
+            fecha_nacimiento = request.form['fecha_nacimiento']
+            sexo             = request.form['sexo']
+            telefono         = request.form['telefono']
+            direccion        = request.form['direccion']
+            email            = request.form['email']
+            # Campos Usuario
+            nombre_user      = request.form['nombre']
+            contrasena_user  = request.form['contrasena_user']
+            nuevo_id = consultas.insertar_paciente_con_usuario(
+                nombre, apellido, dni, fecha_nacimiento,
+                sexo, telefono, direccion, email,
+                nombre_user, contrasena_user
+            )
+            if nuevo_id:
+                flash(f'Paciente y usuario creados (ID: {nuevo_id})', 'success')
+            else:
+                flash('Error al crear paciente y usuario', 'danger')
+            return redirect(url_for('modificar_paciente'))
+
+        id_paciente = request.form['id']
+        if action == 'delete':
+            if consultas.eliminar_paciente(id_paciente):
+                flash('Paciente y usuario eliminados', 'success')
+            else:
+                flash('Error al eliminar paciente', 'danger')
+            return redirect(url_for('modificar_paciente'))
+
+        # action == 'update'
+        nombre           = request.form['nombre']
+        apellido         = request.form['apellido']
+        dni              = request.form['dni']
+        fecha_nacimiento = request.form['fecha_nacimiento']
+        sexo             = request.form['sexo']
+        telefono         = request.form['telefono']
+        direccion        = request.form['direccion']
+        email            = request.form['email']
+        if consultas.update_paciente(
+            id_paciente, nombre, apellido, dni,
+            fecha_nacimiento, sexo, telefono,
+            direccion, email
+        ):
+            flash('Paciente y usuario actualizados', 'success')
+        else:
+            flash('Error al actualizar paciente', 'danger')
+        return redirect(url_for('modificar_paciente'))
+
+    # GET: listar
+    pacientes = consultas.get_all_pacientes()
+    return render_template('modificar_paciente.html', pacientes=pacientes)
+
+@app.route('/admin/modificar_doctor', methods=['GET', 'POST'])
+def modificar_doctor():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'add':
+            # Campos Medico
+            nombre  = request.form['nombre']
+            apellido= request.form['apellido']
+            email   = request.form['email']
+            estado  = request.form['estado']
+            # Campos Usuario
+            nombre_user     = request.form['nombre']
+            contrasena_user = request.form['contrasena_user']
+            new_id = consultas.insertar_doctor_con_usuario(
+                nombre, apellido, email, estado,
+                nombre_user, contrasena_user
+            )
+            if new_id:
+                flash(f'Doctor y usuario creados (ID: {new_id})', 'success')
+            else:
+                flash('Error al crear doctor y usuario', 'danger')
+            return redirect(url_for('modificar_doctor'))
+
+        id_medico = request.form['id']
+        if action == 'delete':
+            if consultas.eliminar_doctor(id_medico):
+                flash('Doctor y usuario eliminados', 'success')
+            else:
+                flash('Error al eliminar doctor', 'danger')
+            return redirect(url_for('modificar_doctor'))
+
+        # action == 'update'
+        nombre  = request.form['nombre']
+        apellido= request.form['apellido']
+        email   = request.form['email']
+        estado  = request.form['estado']
+        if consultas.update_doctor(id_medico, nombre, apellido, email, estado):
+            flash('Doctor y usuario actualizados', 'success')
+        else:
+            flash('Error al actualizar doctor', 'danger')
+        return redirect(url_for('modificar_doctor'))
+
+    # GET
+    doctores = consultas.get_all_doctores()
+    return render_template('modificar_doctor.html', doctores=doctores)
+
+@app.route('/admin/reporte_pacientes', methods=['GET'])
+def reporte_pacientes():
+    desde = request.args.get('desde')      # YYYY-MM-DD para fecha_nacimiento
+    hasta = request.args.get('hasta')
+    sexo  = request.args.get('sexo')
+    texto = request.args.get('texto')
+
+    df = consultas.get_pacientes_dataframe(
+        desde=desde, hasta=hasta, sexo=sexo, texto_busqueda=texto
+    )
+
+    if request.args.get('export') == 'excel':
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as w:
+            df.to_excel(w, index=False, sheet_name='Pacientes')
+        output.seek(0)
+        filename = f'Reporte_Pacientes_{pd.Timestamp.today().date()}.xlsx'
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
+    pacientes = df.to_dict(orient='records')
+    return render_template(
+        'reporte_pacientes.html',
+        pacientes=pacientes,
+        filtros={'desde': desde, 'hasta': hasta, 'sexo': sexo, 'texto': texto}
+    )
 
 
 if __name__ == '__main__':
