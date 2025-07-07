@@ -286,6 +286,240 @@ def api_precio_consulta(id_especialidad):
     return {"precio": precio}
 
 
+@app.route('/diagnosticos')
+def listar_diagnosticos():
+    if session.get('rol') != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    id_medico = session['usuario_id']
+    lista = consultas.obtener_diagnosticos_por_medico(id_medico)
+    return render_template("diagnosticos/lista.html", diagnosticos=lista)
+
+@app.route('/diagnosticos/crear', methods=["GET", "POST"])
+def crear_diagnostico():
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("No autorizado", "danger")
+        return redirect(url_for('login_medico'))
+
+    id_medico = session['usuario_id']
+    enfermedades = consultas.obtener_enfermedades()
+    citas = consultas.obtener_citas_medico(id_medico)
+
+    if request.method == "POST":
+        descripcion = request.form["descripcion"]
+        id_enfermedad = request.form["id_enfermedad"]
+        id_cita = request.form["id_cita"]
+
+        consultas.insertar_diagnostico(descripcion, id_enfermedad, id_cita)
+        # Buscar el diagnóstico recién creado
+        diagnosticos = consultas.obtener_diagnosticos_por_medico(id_medico)
+        diagnostico_id = diagnosticos[0]["id_diagnostico"] if diagnosticos else None
+        flash("Diagnóstico registrado correctamente", "success")
+        return redirect(url_for('crear_receta', id_diagnostico=diagnostico_id))
+
+    return render_template("diagnosticos/formulario_crear.html",
+                           enfermedades=enfermedades,
+                           citas=citas)
+
+@app.route('/diagnosticos/<int:id>/editar', methods=["GET", "POST"])
+def editar_diagnostico(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("No autorizado", "danger")
+        return redirect(url_for('login_medico'))
+
+    diagnostico = consultas.obtener_diagnostico_por_id(id)
+    enfermedades = consultas.obtener_enfermedades()
+
+    if request.method == "POST":
+        nueva_descripcion = request.form["descripcion_dgnstico"]
+        nueva_enfermedad = request.form["id_enfermedad"]
+        consultas.actualizar_diagnostico(id, nueva_descripcion, nueva_enfermedad)
+        flash("Diagnóstico actualizado", "success")
+        return redirect(url_for('listar_diagnosticos'))
+
+    return render_template("diagnosticos/formulario_editar_diagnostico.html",
+                           diagnostico=diagnostico,
+                           enfermedades=enfermedades)
+
+
+@app.route('/diagnosticos/<int:id>/eliminar')
+def eliminar_diagnostico(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("No autorizado", "danger")
+        return redirect(url_for('login_medico'))
+
+    consultas.eliminar_diagnostico(id)
+    flash("Diagnóstico eliminado", "info")
+    return redirect(url_for('listar_diagnosticos'))
+
+@app.route('/diagnosticos/<int:id>/medicamentos')
+def ver_medicamentos_diagnostico(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso no autorizado", "danger")
+        return redirect(url_for('login_medico'))
+
+    receta = consultas.obtener_receta_por_diagnostico(id)
+    medicamentos = []
+    if receta:
+        medicamentos = consultas.obtener_medicamentos_por_receta(receta["id_receta"])
+
+    return render_template("recetas/ver_medicamentos.html",
+                           receta=receta,
+                           medicamentos=medicamentos,
+                           id_diagnostico=id)
+
+
+@app.route('/diagnosticos/<int:id_diagnostico>/receta', methods=["GET", "POST"])
+def crear_receta(id_diagnostico):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso no autorizado", "danger")
+        return redirect(url_for('login_medico'))
+
+    # Buscar la cita asociada al diagnóstico
+    diagnostico = consultas.obtener_diagnostico_por_id(id_diagnostico)
+    if not diagnostico:
+        flash("Diagnóstico no encontrado", "danger")
+        return redirect(url_for('listar_diagnosticos'))
+
+    id_cita = diagnostico["id_cita"]
+
+    if request.method == "POST":
+        indicaciones = request.form["indicaciones_receta"]
+        consultas.insertar_receta(indicaciones, id_cita)
+        flash("Receta registrada con éxito", "success")
+        return redirect(url_for('ver_medicamentos_diagnostico', id=id_diagnostico))
+
+    return render_template("recetas/formulario_nuevo.html", id_diagnostico=id_diagnostico)
+
+
+@app.route('/recetas/<int:id_receta>/medicamentos/nuevo', methods=["GET", "POST"])
+def agregar_medicamento(id_receta):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    medicamentos = consultas.obtener_medicamentos_disponibles()
+
+    if request.method == "POST":
+        id_medicamento = request.form["id_medicamento"]
+        indicaciones = request.form["indicaciones_medcmnto"]
+
+        consultas.insertar_receta_medicamento(id_receta, id_medicamento, indicaciones)
+        flash("Medicamento agregado a la receta", "success")
+        return redirect(request.referrer)
+
+    return render_template("recetas/formulario_agregar_medicamento.html",
+                           id_receta=id_receta,
+                           medicamentos=medicamentos)
+    
+    
+@app.route('/medicamentos/<int:id>/editar', methods=["GET", "POST"])
+def editar_medicamento(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    medicamento = consultas.obtener_medicamento_por_id(id)
+    if request.method == "POST":
+        nombre = request.form["nombre_medcmnto"]
+        presentacion = request.form["presentacion"]
+        descripcion = request.form["descrip_medcmnto"]
+
+        consultas.actualizar_medicamento(id, nombre, presentacion, descripcion)
+        flash("Medicamento actualizado correctamente", "success")
+        return redirect(request.referrer)
+
+    return render_template("medicamentos/formulario_editar.html", medicamento=medicamento)
+
+'''@app.route('/medicamentos/<int:id>/eliminar')
+def eliminar_medicamento(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    consultas.eliminar_medicamento(id)
+    flash("Medicamento eliminado", "info")
+    return redirect(request.referrer)'''
+    
+@app.route('/medicamentos/<int:id>/eliminar')
+def eliminar_medicamento(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    try:
+        consultas.eliminar_relaciones_medicamento(id)  # Primero elimina relaciones
+        consultas.eliminar_medicamento(id)              # Luego elimina medicamento
+        flash("Medicamento eliminado correctamente", "success")
+    except Exception as e:
+        flash(f"No se pudo eliminar el medicamento: {str(e)}", "danger")
+
+    # Regresar a la receta actual
+    id_diagnostico = request.args.get("id_diagnostico")
+    return redirect(url_for('ver_medicamentos_diagnostico', id=id_diagnostico))
+    
+
+@app.route('/recetas/<int:id>/editar', methods=["GET", "POST"])
+def editar_receta(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    receta = consultas.obtener_receta_por_id(id)
+    if request.method == "POST":
+        indicaciones = request.form["indicaciones_receta"]
+        consultas.actualizar_receta(id, indicaciones)
+        flash("Receta actualizada correctamente", "success")
+        return redirect(request.referrer)
+
+    return render_template("recetas/formulario_editar.html", receta=receta)
+
+@app.route('/recetas/<int:id>/eliminar')
+def eliminar_receta(id):
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    consultas.eliminar_receta(id)
+    flash("Receta eliminada", "info")
+    return redirect(url_for('listar_diagnosticos'))
+    
+
+@app.route('/medicamentos')
+def listar_medicamentos():
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    medicamentos = consultas.obtener_medicamentos_disponibles()
+    return render_template("medicamentos/lista.html", medicamentos=medicamentos)
+
+@app.route('/medicamentos/nuevo', methods=["GET", "POST"])
+def crear_medicamento():
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    if request.method == "POST":
+        nombre = request.form["nombre_medcmnto"]
+        presentacion = request.form["presentacion"]
+        descripcion = request.form["descrip_medcmnto"]
+        consultas.insertar_medicamento(nombre, presentacion, descripcion)
+        flash("Medicamento agregado", "success")
+        return redirect(url_for('listar_medicamentos'))
+
+    return render_template("medicamentos/formulario_nuevo.html")
+
+@app.route('/recetas')
+def listar_recetas():
+    if 'usuario_id' not in session or session['rol'] != 'medico':
+        flash("Acceso denegado", "danger")
+        return redirect(url_for('login_medico'))
+
+    recetas = consultas.obtener_recetas()  # Debes tener esta función en `consultas.py`
+    return render_template("recetas/lista.html", recetas=recetas)
+
 
 
 if __name__ == '__main__':

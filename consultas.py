@@ -262,6 +262,185 @@ def obtener_especialidades_con_descripcion():
             return cursor.fetchall()
     finally:
         conexion.close()
+        
+        
+        
+def obtener_diagnosticos_por_medico(id_medico):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("""
+            SELECT d.id_diagnostico, d.descripcion_dgnstico,
+                   e.nombre_enfrmdad,
+                   p.nombre AS nombre_paciente, p.apellido AS apellido_paciente,
+                   c.fecha
+            FROM Diagnostico d
+            JOIN Enfermedad e ON d.id_enfermedad = e.id_enfermedad
+            JOIN Cita c ON d.id_cita = c.id_cita
+            JOIN Paciente p ON c.id_paciente = p.id_paciente
+            WHERE c.id_medico = %s
+            ORDER BY c.fecha DESC
+        """, (id_medico,))
+        return cursor.fetchall()
+    
+def insertar_diagnostico(descripcion, id_enfermedad, id_cita):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO Diagnostico (descripcion_dgnstico, id_enfermedad, id_cita)
+            VALUES (%s, %s, %s)
+        """, (descripcion, id_enfermedad, id_cita))
+        conexion.commit()
+
+def obtener_enfermedades():
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("SELECT id_enfermedad, nombre_enfrmdad FROM Enfermedad")
+        return cursor.fetchall()
+
+def obtener_citas_medico(id_medico):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("""
+            SELECT c.id_cita, c.fecha, c.hora, p.nombre, p.apellido
+            FROM Cita c
+            JOIN Paciente p ON c.id_paciente = p.id_paciente
+            WHERE c.id_medico = %s
+            ORDER BY c.fecha DESC
+        """, (id_medico,))
+        return cursor.fetchall()
+
+   
+def insertar_receta(indicaciones, id_cita):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO Receta (indicaciones_receta, id_cita)
+            VALUES (%s, %s)
+        """, (indicaciones, id_cita))
+        conexion.commit()
+
+def obtener_receta_por_cita(id_cita):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("SELECT * FROM Receta WHERE id_cita = %s", (id_cita,))
+        return cursor.fetchone()
+    
+
+def obtener_diagnostico_por_id(id_diagnostico):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("""
+            SELECT * FROM Diagnostico WHERE id_diagnostico = %s
+        """, (id_diagnostico,))
+        return cursor.fetchone()
+
+def actualizar_diagnostico(id_diagnostico, descripcion, id_enfermedad):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("""
+            UPDATE Diagnostico
+            SET descripcion_dgnstico = %s, id_enfermedad = %s
+            WHERE id_diagnostico = %s
+        """, (descripcion, id_enfermedad, id_diagnostico))
+        conexion.commit()
+        
+def eliminar_diagnostico(id_diagnostico):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("DELETE FROM Diagnostico WHERE id_diagnostico = %s", (id_diagnostico,))
+        conexion.commit()
+        
+def obtener_receta_por_diagnostico(id_diagnostico):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        # Obtenemos la cita asociada al diagnóstico
+        cursor.execute("""
+            SELECT r.* FROM Diagnostico d
+            JOIN Cita c ON d.id_cita = c.id_cita
+            JOIN Receta r ON r.id_cita = c.id_cita
+            WHERE d.id_diagnostico = %s
+        """, (id_diagnostico,))
+        return cursor.fetchone()
+
+def obtener_medicamentos_por_receta(id_receta):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("""
+            SELECT rm.*, m.nombre_medcmnto, m.presentacion
+            FROM Receta_Medicamento rm
+            JOIN Medicamento m ON rm.id_medicamento = m.id_medicamento
+            WHERE rm.id_receta = %s
+        """, (id_receta,))
+        return cursor.fetchall()
+    
+def obtener_medicamentos_disponibles():
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("SELECT * FROM Medicamento")
+        return cursor.fetchall()
+
+def insertar_receta_medicamento(id_receta, id_medicamento, indicaciones):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO Receta_Medicamento (id_receta, id_medicamento, indicaciones_medcmnto)
+            VALUES (%s, %s, %s)
+        """, (id_receta, id_medicamento, indicaciones))
+    conexion.commit()
+    
+def obtener_medicamento_por_id(id_medicamento):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("SELECT * FROM Medicamento WHERE id_medicamento = %s", (id_medicamento,))
+        return cursor.fetchone()
+
+def actualizar_medicamento(id_medicamento, nombre, presentacion, descripcion):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("""
+            UPDATE Medicamento
+            SET nombre_medcmnto = %s, presentacion = %s, descrip_medcmnto = %s
+            WHERE id_medicamento = %s
+        """, (nombre, presentacion, descripcion, id_medicamento))
+        conexion.commit()
+
+def eliminar_medicamento(id_medicamento):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("DELETE FROM Medicamento WHERE id_medicamento = %s", (id_medicamento,))
+        conexion.commit()
+
+def obtener_receta_por_id(id_receta):
+    conexion = obtener_conexion()
+    with conexion.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute("SELECT * FROM Receta WHERE id_receta = %s", (id_receta,))
+        return cursor.fetchone()
+
+def actualizar_receta(id_receta, indicaciones):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("""
+            UPDATE Receta SET indicaciones_receta = %s
+            WHERE id_receta = %s
+        """, (indicaciones, id_receta))
+        conexion.commit()
+
+def eliminar_receta(id_receta):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("DELETE FROM Receta WHERE id_receta = %s", (id_receta,))
+        conexion.commit()
+    
+    
+def eliminar_relaciones_medicamento(id_medicamento):
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+        cursor.execute("DELETE FROM Receta_Medicamento WHERE id_medicamento = %s", (id_medicamento,))
+    conexion.commit()
+    conexion.close()
+        
+        
+        
 
 '''def obtener_doctores_por_especialidad(id_especialidad):
     conexion = obtener_conexion()
